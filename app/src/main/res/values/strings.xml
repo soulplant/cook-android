@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Cook</string>
+
+
+    <string name="title_section1">Recipes</string>
+    <string name="title_section2">Shopping List</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+</resources>

@@ -1,0 +1,199 @@
+package com.dc.cook;
+
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
+
+public class MainActivity extends ActionBarActivity {
+
+  /**
+   * The {@link android.support.v4.view.PagerAdapter} that will provide
+   * fragments for each of the sections. We use a
+   * {@link FragmentPagerAdapter} derivative, which will keep every
+   * loaded fragment in memory. If this becomes too memory intensive, it
+   * may be best to switch to a
+   * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+   */
+  SectionsPagerAdapter mSectionsPagerAdapter;
+
+  /**
+   * The {@link ViewPager} that will host the section contents.
+   */
+  ViewPager mViewPager;
+  private static Typeface type;
+
+  public MainActivity() {
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    type = Typeface.createFromAsset(getAssets(), "RobotoCondensed-Bold.ttf");
+    setContentView(R.layout.activity_main);
+
+    // Create the adapter that will return a fragment for each of the three
+    // primary sections of the activity.
+    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+    // Set up the ViewPager with the sections adapter.
+    mViewPager = (ViewPager) findViewById(R.id.pager);
+    mViewPager.setAdapter(mSectionsPagerAdapter);
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+//    getMenuInflater().inflate(R.menu.menu_main, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    // Handle action bar item clicks here. The action bar will
+    // automatically handle clicks on the Home/Up button, so long
+    // as you specify a parent activity in AndroidManifest.xml.
+    int id = item.getItemId();
+
+    //noinspection SimplifiableIfStatement
+    if (id == R.id.action_settings) {
+      return true;
+    }
+
+    return super.onOptionsItemSelected(item);
+  }
+
+
+  /**
+   * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+   * one of the sections/tabs/pages.
+   */
+  public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+    public SectionsPagerAdapter(FragmentManager fm) {
+      super(fm);
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+      // getItem is called to instantiate the fragment for the given page.
+      // Return a PlaceholderFragment (defined as a static inner class below).
+      return PlaceholderFragment.newInstance(position + 1);
+    }
+
+    @Override
+    public int getCount() {
+      // One page for recipes, one for the shopping list.
+      return 2;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+      Locale l = Locale.getDefault();
+      switch (position) {
+        case 0:
+          return getString(R.string.title_section1).toUpperCase(l);
+        case 1:
+          return getString(R.string.title_section2).toUpperCase(l);
+      }
+      return null;
+    }
+  }
+
+  /**
+   * A placeholder fragment containing a simple view.
+   */
+  public static class PlaceholderFragment extends Fragment {
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+    private static final String ARG_SECTION_NUMBER = "section_number";
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static PlaceholderFragment newInstance(int sectionNumber) {
+      PlaceholderFragment fragment = new PlaceholderFragment();
+      Bundle args = new Bundle();
+      args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+      fragment.setArguments(args);
+      return fragment;
+    }
+
+    public PlaceholderFragment() {
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+      super.onViewStateRestored(savedInstanceState);
+      updateViewBgColor(getView(), getArguments());
+    }
+
+    private void updateViewBgColor(View view, Bundle savedInstanceState) {
+      int index = 0;
+      if (savedInstanceState != null) {
+        index = savedInstanceState.getInt(ARG_SECTION_NUMBER) - 1;
+      }
+      view.setBackgroundColor(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE).get(index));
+    }
+
+    private final List<String> recipes = Arrays.asList(
+        "Comfort Pasta",
+        "Chicken Skewers",
+        "Tomato Soup",
+        "Steak with Mash and Garden Salad",
+        "Pea Noup",
+        "BLT",
+        "Simple Tomato Pasta",
+        "Wonky Summer Pasta",
+        "Breakfast Stuff",
+        "Simple Curry",
+        "Tomato and Cheese on Toast",
+        "Sambal Oleck Stir Fry",
+        "Ratatouille from Taste.com",
+        "Ratatouille from Jamie Oliver"
+    );
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+      View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+      ListView view = (ListView) rootView.findViewById(R.id.recipe_list);
+      view.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, recipes) {
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+          TextView view = (TextView) inflater.inflate(R.layout.recipe, parent, false);
+          view.setText(getItem(position));
+          view.setGravity(Gravity.CENTER);
+          view.setTypeface(type);
+          return view;
+        }
+      });
+          updateViewBgColor(rootView, getArguments());
+      return rootView;
+    }
+  }
+
+}
