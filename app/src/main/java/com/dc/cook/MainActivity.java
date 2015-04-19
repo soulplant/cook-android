@@ -15,14 +15,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -145,20 +147,6 @@ public class MainActivity extends ActionBarActivity {
     public PlaceholderFragment() {
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-      super.onViewStateRestored(savedInstanceState);
-      updateViewBgColor(getView(), getArguments());
-    }
-
-    private void updateViewBgColor(View view, Bundle savedInstanceState) {
-      int index = 0;
-      if (savedInstanceState != null) {
-        index = savedInstanceState.getInt(ARG_SECTION_NUMBER) - 1;
-      }
-      view.setBackgroundColor(Arrays.asList(Color.RED, Color.GREEN, Color.BLUE).get(index));
-    }
-
     private final List<String> recipes = Arrays.asList(
         "Comfort Pasta",
         "Chicken Skewers",
@@ -180,7 +168,23 @@ public class MainActivity extends ActionBarActivity {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
       View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+      rootView.setBackgroundColor(Color.WHITE);
       ListView view = (ListView) rootView.findViewById(R.id.recipe_list);
+      final Set<View> selection = new HashSet<>();
+      view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+          TextView tv = (TextView) view;
+          boolean wasSelected = selection.contains(view);
+          if (wasSelected) {
+            selection.remove(view);
+          } else {
+            selection.add(view);
+          }
+          boolean isSelected = !wasSelected;
+          tv.setBackgroundColor(isSelected ? Color.rgb(0, 166, 81) : Color.WHITE);
+        }
+      });
       view.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, recipes) {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -191,7 +195,6 @@ public class MainActivity extends ActionBarActivity {
           return view;
         }
       });
-          updateViewBgColor(rootView, getArguments());
       return rootView;
     }
   }
